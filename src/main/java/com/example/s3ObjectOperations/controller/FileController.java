@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 /**
  * @author Vivek Kumar Sinha
@@ -19,18 +22,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class FileController {
 
+    private final IFileService fileService;
+
     @Autowired
-    private IFileService fileService;
+    public FileController(IFileService fileService) {
+        this.fileService = fileService;
+    }
 
     @PostMapping(value = "/uploadFile")
-    SuccessResponseDTO<UploadFileResponseDTO> uploadFile(@RequestBody UploadFileRequestDTO uploadFileRequest) {
-        UploadFileResponseDTO response = fileService.uploadFile();
+    SuccessResponseDTO<UploadFileResponseDTO> uploadFile(@RequestBody UploadFileRequestDTO uploadFileRequest) throws IOException {
+        UploadFileResponseDTO response = fileService.uploadFile(uploadFileRequest);
         return new SuccessResponseDTO<>(response);
     }
 
     @GetMapping(value = "/getFileUrl")
-    SuccessResponseDTO<FileUrlResponseDTO> getFileUrl(@RequestBody UploadFileRequestDTO uploadFileRequest) {
-        FileUrlResponseDTO response = fileService.getFileUrl();
+    SuccessResponseDTO<FileUrlResponseDTO> getFileUrl(
+            @RequestParam("bucketName") String bucketName,
+            @RequestParam("key") String key,
+            @RequestParam(value = "presignedUrlRequired", required = false) Boolean presignedUrlRequired,
+            @RequestParam(value = "expiryInMinutes", required = false) Integer expiryInMinutes) {
+        FileUrlResponseDTO response = fileService.getFileUrl(bucketName, key, presignedUrlRequired, expiryInMinutes);
         return new SuccessResponseDTO<>(response);
     }
 }

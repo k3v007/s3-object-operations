@@ -12,11 +12,13 @@ public class SuccessResponseDTO<T> extends BaseResponseDTO<T> {
 
     public SuccessResponseDTO(T data) {
         super();
+        this.success = true;
         this.data = data;
     }
 
     public SuccessResponseDTO(T data, List<String> messages) {
         super();
+        this.success = true;
         this.data = data;
         this.messages = messages;
     }

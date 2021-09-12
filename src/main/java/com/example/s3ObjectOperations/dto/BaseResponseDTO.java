@@ -1,6 +1,5 @@
 package com.example.s3ObjectOperations.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class BaseResponseDTO<T> {
 
+    protected boolean success;
     protected T data = (T) Collections.emptyMap();
     protected List<String> messages = new ArrayList<>();
     protected List<String> error = new ArrayList<>();
