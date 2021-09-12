@@ -1,5 +1,7 @@
 package com.example.s3ObjectOperations.service.platform;
 
+import com.example.s3ObjectOperations.dto.PresignedUrlDTO;
+
 import java.net.URL;
 
 /**
@@ -7,7 +9,7 @@ import java.net.URL;
  */
 public interface IS3RetrieverService {
 
-    URL getFileUrl(String key, String bucketName, String region);
+    URL getFileUrl(String bucketName, String key);
 
-    URL getPresignedUrl(String key, String bucketName, String region, Integer expiryTimeInMinutes);
+    PresignedUrlDTO getPresignedUrl(String bucketName, String key, Integer expiryTimeInMinutes);
 }

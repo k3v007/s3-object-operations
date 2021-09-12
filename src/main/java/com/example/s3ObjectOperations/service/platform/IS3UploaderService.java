@@ -7,5 +7,5 @@ import java.net.URL;
  */
 public interface IS3UploaderService {
 
-    URL uploadFile(byte[] file);
+    URL uploadFile(String bucketName, String key, byte[] file);
 }
