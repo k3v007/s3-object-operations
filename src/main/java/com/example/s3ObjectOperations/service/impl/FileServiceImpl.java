@@ -4,6 +4,7 @@ import com.example.s3ObjectOperations.dto.FileUrlResponseDTO;
 import com.example.s3ObjectOperations.dto.PresignedUrlDTO;
 import com.example.s3ObjectOperations.dto.UploadFileRequestDTO;
 import com.example.s3ObjectOperations.dto.UploadFileResponseDTO;
+import com.example.s3ObjectOperations.exception.S3UploaderServiceException;
 import com.example.s3ObjectOperations.service.IFileService;
 import com.example.s3ObjectOperations.service.platform.IS3RetrieverService;
 import com.example.s3ObjectOperations.service.platform.IS3UploaderService;
@@ -44,10 +45,17 @@ public class FileServiceImpl implements IFileService {
                 LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(), fileExtension);
         log.info("bucketName={} :: key={}", bucketName, key);
         byte[] byteFile = IOUtils.toByteArray(fis);
-        URL url = s3UploaderService.uploadFile(uploadFileRequest.getBucketName(), key, byteFile);
-        return UploadFileResponseDTO.builder()
-                .fileUrl(url.toExternalForm())
-                .build();
+        try {
+            URL url = s3UploaderService.uploadFile(uploadFileRequest.getBucketName(), key, byteFile);
+            return UploadFileResponseDTO.builder()
+                    .fileUrl(url.toExternalForm())
+                    .build();
+        } catch (S3UploaderServiceException e) {
+            log.error("FILE_SERVICE_ERROR :: Error in uploading file to S3 : {}", e.getMessage(), e);
+            return UploadFileResponseDTO.builder()
+                    .fileUrl(null)
+                    .build();
+        }
     }
 
     @Override

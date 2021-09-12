@@ -4,8 +4,10 @@ import com.example.s3ObjectOperations.dto.FileUrlResponseDTO;
 import com.example.s3ObjectOperations.dto.UploadFileRequestDTO;
 import com.example.s3ObjectOperations.dto.UploadFileResponseDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Slf4j
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FileServiceTest {
 
     @Autowired
@@ -32,8 +35,8 @@ public class FileServiceTest {
     @Order(1)
     public void givenFilePathAndBucketNameAndKey_shouldUploadFileToS3() throws IOException {
         UploadFileRequestDTO uploadFileRequest = UploadFileRequestDTO.builder()
-                .filePath("/Users/viveksinha/Desktop/test-report.csv")
-                .bucketName("stg-finbus-munshi-test")
+                .filePath("/Users/viveksinha/Desktop/test-file.zip")
+                .bucketName("my-bucket")
                 .folder("test-folder")
                 .build();
         UploadFileResponseDTO response = fileService.uploadFile(uploadFileRequest);
@@ -44,6 +47,21 @@ public class FileServiceTest {
 
     @Test
     @Order(2)
+    public void givenFilePathAndBucketNameAndKey_shouldReturnNullFileUrl() throws IOException {
+        UploadFileRequestDTO uploadFileRequest = UploadFileRequestDTO.builder()
+                .filePath("/Users/viveksinha/Desktop/test-file.zip")
+                .bucketName("my-bucketV2")
+                .folder("test-folder")
+                .build();
+        // s3 bucket doesn't exist
+        UploadFileResponseDTO response = fileService.uploadFile(uploadFileRequest);
+        assertThat(response).isNotNull();
+        assertThat(response.getFileUrl()).isNull();
+        log.info("fileUrl={}", response.getFileUrl());
+    }
+
+    @Test
+    @Order(3)
     public void givenBucketNameAndKey_shouldReturnFileUrl() {
         String bucketName = "my-bucket";
         String key = "1586159597034_test.csv";
@@ -55,7 +73,7 @@ public class FileServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void givenBucketNameAndKeyAndExpiryTimeInMinutes_shouldReturnPresignedUrlAndExpiryTime() {
         String bucketName = "my-bucket";
         String key = "1586159597034_test.csv";
